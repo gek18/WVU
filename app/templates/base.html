@@ -13,22 +13,23 @@
   <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
 </head>
 <body>
+<a class="skip-link" href="#main-content">İçeriğe geç</a>
 <nav class="navbar navbar-expand-lg navbar-dark site-nav"><div class="container">
   <a class="navbar-brand fw-bold" href="{{ url_for('main.index') }}"><span class="brand-mark">Y</span> YurtTakip</a>
   <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-label="Menüyü aç"><span class="navbar-toggler-icon"></span></button>
   <div class="collapse navbar-collapse" id="mainNav">
     {% if current_user.is_authenticated %}
     <div class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
-      <a class="nav-link" href="{{ url_for('main.dashboard') }}">Ana Sayfa</a>
-      <a class="nav-link" href="{{ url_for('issues.list_issues') }}">Arızalar</a>
-      {% if current_user.role == 'manager' %}<a class="nav-link" href="{{ url_for('main.rooms') }}">Odalar ve Ekip</a><a class="nav-link" href="{{ url_for('main.reports') }}">Raporlar</a>{% endif %}
-      <span class="nav-user">{{ current_user.name }} · {{ current_user.display_role }}</span>
+      <a class="nav-link {% if request.endpoint == 'main.dashboard' %}active{% endif %}" {% if request.endpoint == 'main.dashboard' %}aria-current="page"{% endif %} href="{{ url_for('main.dashboard') }}">Ana Sayfa</a>
+      <a class="nav-link {% if request.endpoint in ['issues.list_issues', 'issues.issue_detail', 'issues.create_issue', 'issues.edit_issue'] %}active{% endif %}" {% if request.endpoint in ['issues.list_issues', 'issues.issue_detail', 'issues.create_issue', 'issues.edit_issue'] %}aria-current="page"{% endif %} href="{{ url_for('issues.list_issues') }}">Arızalar</a>
+      {% if current_user.role == 'manager' %}<a class="nav-link {% if request.endpoint == 'main.rooms' %}active{% endif %}" {% if request.endpoint == 'main.rooms' %}aria-current="page"{% endif %} href="{{ url_for('main.rooms') }}">Odalar ve Ekip</a><a class="nav-link {% if request.endpoint == 'main.reports' %}active{% endif %}" {% if request.endpoint == 'main.reports' %}aria-current="page"{% endif %} href="{{ url_for('main.reports') }}">Raporlar</a>{% endif %}
+      <span class="nav-user"><span class="nav-avatar" aria-hidden="true">{{ current_user.name[:1]|upper }}</span><span>{{ current_user.name }}<small>{{ current_user.display_role }}</small></span></span>
       <form method="post" action="{{ url_for('auth.logout') }}" class="d-inline"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-nav-outline btn-sm">Çıkış Yap</button></form>
     </div>
     {% else %}<div class="navbar-nav ms-auto align-items-lg-center gap-lg-2"><a class="nav-link" href="{{ url_for('auth.login') }}">Giriş Yap</a><a class="btn btn-nav-outline btn-sm" href="{{ url_for('auth.register') }}">Öğrenci Hesabı Oluştur</a></div>{% endif %}
   </div>
 </div></nav>
-<main class="container page-shell">
+<main class="container page-shell" id="main-content" tabindex="-1">
   {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<div class="flash-stack" aria-live="polite">{% for category, message in messages %}<div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">{{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button></div>{% endfor %}</div>{% endif %}{% endwith %}
   {% block content %}{% endblock %}
 </main>

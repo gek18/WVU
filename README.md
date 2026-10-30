@@ -83,3 +83,13 @@ DATABASE_URL=postgresql+psycopg://username:password@localhost:5432/dorm_maintena
 - Dağıtım ortamında `SECRET_KEY` değerini uzun ve rastgele bir ortam değişkeniyle değiştirin.
 - Üretimde `--debug` kullanmayın; HTTPS ve uygun bir WSGI sunucusu kullanın.
 - Oturum çerezlerinin güvenliğini ve veritabanı ayarlarını barındırma ortamınıza göre yapılandırın.
+
+## Testler
+
+Proje kök klasöründe sanal ortam etkin durumdayken tüm birim ve entegrasyon testlerini çalıştırın:
+
+```powershell
+python -m unittest discover -v
+```
+
+Testler, geçici SQLite veritabanı kullanarak oturum açma, rol yetkileri, oda atamaları, fotoğraflı talepler, teknisyen iş akışı, rapor API'si ve CSRF korumasını denetler.
