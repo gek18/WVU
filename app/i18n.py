@@ -1,3 +1,4 @@
+import re
 from urllib.parse import urlsplit
 
 from flask import Blueprint, abort, redirect, request, session, url_for
@@ -291,7 +292,29 @@ def get_language():
 
 def translate(message, **values):
     language = get_language()
-    translated = _CATALOG.get(language, {}).get(message, message)
+    catalog = _CATALOG.get(language, {})
+    translated = catalog.get(message)
+    if translated is None:
+        translated = message
+        # History notes may contain values (such as a technician's name).
+        # Match their source or already-localized form so old records follow
+        # the viewer's selected language too.
+        for source_key, source_value in _CATALOG.get("en", {}).items():
+            if "{" not in source_key:
+                continue
+            target_value = catalog.get(source_key, source_key)
+            for candidate in (source_key, source_value, _CATALOG.get("ar", {}).get(source_key, source_key)):
+                parts = re.split(r"(\{\w+\})", candidate)
+                pattern = "^" + "".join(
+                    f"(?P<{part[1:-1]}>.*?)" if part.startswith("{") else re.escape(part)
+                    for part in parts
+                ) + "$"
+                match = re.match(pattern, message)
+                if match:
+                    translated = target_value.format(**match.groupdict())
+                    break
+            if translated != message:
+                break
     return translated.format(**values) if values else translated
 
 

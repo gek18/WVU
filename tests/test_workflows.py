@@ -100,8 +100,30 @@ class ApplicationWorkflowTests(unittest.TestCase):
         self.assertIn(b'<html lang="ar" dir="rtl">', arabic.data)
         self.assertIn("السكن".encode(), arabic.data)
         self.assertIn(b"bootstrap.rtl.min.css", arabic.data)
+        register = self.client.get("/register")
+        self.assertIn("إنشاء حساب".encode(), register.data)
+        self.assertNotIn(b"olu\xc5\x9ftur", register.data)
 
         self.assertEqual(self.client.get("/language/fr").status_code, 404)
+
+    def test_historical_assignment_note_uses_selected_language(self):
+        issue = self.make_issue(status="assigned", technician_id=self.technician.id)
+        db.session.add(IssueStatusHistory(
+            issue_id=issue.id,
+            changed_by_id=self.manager.id,
+            from_status="open",
+            to_status="assigned",
+            note=f"Şu teknisyene atandı: {self.technician.name}",
+        ))
+        db.session.commit()
+        self.login("manager@example.test")
+        with self.client.session_transaction() as session:
+            session["language"] = "ar"
+
+        response = self.client.get(f"/issues/{issue.id}")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(f"أُسند إلى الفني: {self.technician.name}".encode(), response.data)
+        self.assertNotIn("Şu teknisyene atandı".encode(), response.data)
 
     def test_manager_and_technician_dashboards_render(self):
         self.login("manager@example.test")

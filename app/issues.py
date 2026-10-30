@@ -182,7 +182,7 @@ def assign_issue(issue_id):
     issue.status = "assigned"
     issue.closed_at = None
     issue.resolution_minutes = None
-    db.session.add(IssueStatusHistory(issue_id=issue.id, changed_by_id=current_user.id, from_status=old_status, to_status="assigned", note=translate("Şu teknisyene atandı: {name}", name=technician.name)))
+    db.session.add(IssueStatusHistory(issue_id=issue.id, changed_by_id=current_user.id, from_status=old_status, to_status="assigned", note=f"Şu teknisyene atandı: {technician.name}"))
     db.session.commit()
     flash("Talep teknisyene atandı.", "success")
     return redirect(url_for("issues.issue_detail", issue_id=issue.id))
