@@ -1,6 +1,6 @@
 # YurtTakip — Öğrenci Yurdu Oda ve Bakım Talebi Yönetimi
 
-Web Programlama ve Veritabanı Sistemleri dersi için hazırlanmış çok dilli bir web uygulaması. Öğrenci, teknisyen ve yönetici rolleri; oda yönetimi; bakım talepleri; teknisyen ataması; durum geçmişi ve performans raporlarını içerir. Arayüz Türkçe, İngilizce ve Arapça kullanılabilir; dil seçimi üst menüden yapılır ve Arapça görünüm RTL düzenine geçer.
+Web Programlama ve Veritabanı Sistemleri dersi için hazırlanmış çok dilli bir web uygulaması. Öğrenci, teknisyen ve yönetici rolleri; oda yönetimi; bakım talepleri; teknisyen ataması; durum geçmişi; öğrenci geri bildirimi ve performans raporlarını içerir. Arayüz Türkçe, İngilizce ve Arapça kullanılabilir; dil seçimi üst menüden yapılır ve Arapça görünüm RTL düzenine geçer. Üniversite logosu [Siirt Üniversitesi kurumsal kimlik sayfasındaki](https://siirt.edu.tr/detay/kurumsal-kimlik/578254.html) resim kaynağını kullanır.
 
 ## Gereksinimler
 
@@ -41,6 +41,8 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 - **Yönetici:** Oda ekler, düzenler, siler (yalnızca geçmiş kaydı yoksa), öğrencilere oda atar, atamayı sonlandırır, teknisyen/yönetici hesapları açar, talepleri teknisyenlere yönlendirir ve raporları inceler.
 - **Teknisyen:** Yalnızca kendisine atanan talepleri görüntüler; onarıma başlatır ve talebi kapatır.
 
+Giriş sayfası `/login` üzerinden öğrenci, teknisyen veya yönetici giriş ekranlarından biri seçilir. Doğrudan yollar `/login/student`, `/login/technician` ve `/login/manager` şeklindedir; her ekran yalnızca kendi rolündeki hesabı kabul eder. Öğrenci, kendisine ait ve teknisyen tarafından kapatılmış talep başına 1–5 yıldız ve isteğe bağlı yorum gönderebilir.
+
 Durum akışı: `open` → `assigned` → `in_progress` → `closed`. Her geçişte kullanıcı, zaman, önceki ve yeni durum kaydedilir. Görseller JPG/PNG/WEBP olmalı ve 5 MB sınırını aşmamalıdır.
 
 ## Veritabanı ve geçişler
@@ -53,6 +55,8 @@ Tablolar: `users`, `rooms`, `room_assignments`, `maintenance_skills`, `technicia
 flask --app run.py db migrate -m "describe schema change"
 flask --app run.py db upgrade
 ```
+
+Mevcut kurulumlarda bu sürüme geçerken `flask --app run.py db upgrade` komutunu çalıştırarak `issue_ratings` tablosunu oluşturun.
 
 ## REST API
 

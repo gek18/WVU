@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}{{ t('Giriş türünü seçin') }} | {{ t('YurtTakip') }}{% endblock %}
+{% block content %}
+<div class="auth-layout role-login-layout">
+  <div class="auth-aside">
+    <span class="eyebrow">{{ t('YurtTakip') }}</span>
+    <h1>{{ t('Hesabınıza güvenli giriş') }}</h1>
+    <p>{{ t('Devam etmek için rolünüze ait giriş sayfasını seçin.') }}</p>
+    <div class="aside-line"></div>
+    <small>{{ t('Her rol kendi çalışma alanına yönlendirilir.') }}</small>
+  </div>
+  <section class="auth-card">
+    <div class="section-kicker">{{ t('Giriş yap') }}</div>
+    <h2>{{ t('Giriş türünü seçin') }}</h2>
+    <p class="muted">{{ t('Hesap türünüzü seçerek devam edin.') }}</p>
+    <nav class="role-login-list" aria-label="{{ t('Giriş türleri') }}">
+      <a class="role-login-link" href="{{ url_for('auth.role_login', role='student') }}"><span class="role-login-icon" aria-hidden="true">S</span><span><strong>{{ t('Öğrenci girişi') }}</strong><small>{{ t('Oda ve bakım taleplerinizi takip edin.') }}</small></span><span class="role-login-arrow" aria-hidden="true">→</span></a>
+      <a class="role-login-link" href="{{ url_for('auth.role_login', role='technician') }}"><span class="role-login-icon" aria-hidden="true">T</span><span><strong>{{ t('Teknisyen girişi') }}</strong><small>{{ t('Size atanan bakım işlerini yönetin.') }}</small></span><span class="role-login-arrow" aria-hidden="true">→</span></a>
+      <a class="role-login-link" href="{{ url_for('auth.role_login', role='manager') }}"><span class="role-login-icon" aria-hidden="true">Y</span><span><strong>{{ t('Yönetici girişi') }}</strong><small>{{ t('Yurt odalarını, ekibi ve raporları yönetin.') }}</small></span><span class="role-login-arrow" aria-hidden="true">→</span></a>
+    </nav>
+    <div class="auth-switch">{{ t('Öğrenci hesabınız yok mu?') }} <a href="{{ url_for('auth.register') }}">{{ t('Öğrenci hesabı oluşturun') }}</a></div>
+  </section>
+</div>
+{% endblock %}

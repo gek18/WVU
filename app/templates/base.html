@@ -19,7 +19,7 @@
 <body class="lang-{{ current_language }}">
 <a class="skip-link" href="#main-content">{{ t('İçeriğe geç') }}</a>
 <nav class="navbar navbar-expand-lg navbar-dark site-nav"><div class="container">
-  <a class="navbar-brand fw-bold" href="{{ url_for('main.index') }}"><span class="brand-mark" aria-hidden="true">Y</span> {{ t('YurtTakip') }}</a>
+  <a class="navbar-brand fw-bold university-brand" href="{{ url_for('main.index') }}"><img class="university-logo" src="https://siirt.edu.tr/arayuz/anasayfa/tasarim/images/ustmenudefaultimage.png" alt="{{ t('Siirt Üniversitesi logosu') }}"><span>{{ t('YurtTakip') }}<small>{{ t('Siirt Üniversitesi') }}</small></span></a>
   <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-label="{{ t('Menüyü aç') }}"><span class="navbar-toggler-icon"></span></button>
   <div class="collapse navbar-collapse" id="mainNav">
     {% if current_user.is_authenticated %}

@@ -1,6 +1,6 @@
 import re
 
-from flask import Blueprint, flash as flask_flash, redirect, render_template, request, url_for
+from flask import Blueprint, abort, flash as flask_flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 from sqlalchemy import func
 
@@ -51,15 +51,28 @@ def login():
     if current_user.is_authenticated:
         return redirect(url_for("main.dashboard"))
     if request.method == "POST":
+        return redirect(url_for("auth.login"))
+    return render_template("auth/choose_login.html")
+
+
+@auth_bp.route("/login/<role>", methods=["GET", "POST"])
+def role_login(role):
+    role_labels = {"student": "Öğrenci", "technician": "Teknisyen", "manager": "Yönetici"}
+    if role not in role_labels:
+        abort(404)
+    if current_user.is_authenticated:
+        return redirect(url_for("main.dashboard"))
+    if request.method == "POST":
         email = request.form.get("email", "").strip().lower()
         password = request.form.get("password", "")
         user = db.session.scalar(db.select(User).where(func.lower(User.email) == email))
-        if user is None or not user.check_password(password):
+        password_valid = user is not None and user.check_password(password)
+        if not password_valid or user.role != role:
             flash("E-posta adresi veya şifre yanlış.", "danger")
-            return render_template("auth/login.html"), 401
+            return render_template("auth/login.html", role=role, role_label=role_labels[role]), 401
         login_user(user, remember=request.form.get("remember") == "on")
         return redirect(url_for("main.dashboard"))
-    return render_template("auth/login.html")
+    return render_template("auth/login.html", role=role, role_label=role_labels[role])
 
 
 @auth_bp.post("/logout")

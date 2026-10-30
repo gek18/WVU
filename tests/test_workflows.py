@@ -5,7 +5,7 @@ from pathlib import Path
 
 from app import create_app
 from app.extensions import db
-from app.models import Issue, IssueStatusHistory, MaintenanceSkill, Room, RoomAssignment, User
+from app.models import Issue, IssueRating, IssueStatusHistory, MaintenanceSkill, Room, RoomAssignment, User
 
 
 class ApplicationWorkflowTests(unittest.TestCase):
@@ -45,7 +45,13 @@ class ApplicationWorkflowTests(unittest.TestCase):
         return user
 
     def login(self, email):
-        response = self.client.post("/login", data={"email": email, "password": "password123"})
+        role = {
+            "manager@example.test": "manager",
+            "student@example.test": "student",
+            "other@example.test": "student",
+            "tech@example.test": "technician",
+        }.get(email, "student")
+        response = self.client.post(f"/login/{role}", data={"email": email, "password": "password123"})
         self.assertEqual(response.status_code, 302)
         return response
 
@@ -72,7 +78,7 @@ class ApplicationWorkflowTests(unittest.TestCase):
     def test_public_pages_and_turkish_shell_render(self):
         for path, expected in [
             ("/", "Öğrenci yurdu"),
-            ("/login", "Giriş yap"),
+            ("/login", "Giriş türünü seçin"),
             ("/register", "Öğrenci hesabı oluştur"),
         ]:
             with self.subTest(path=path):
@@ -143,6 +149,60 @@ class ApplicationWorkflowTests(unittest.TestCase):
         self.client.post("/logout")
         self.login("student@example.test")
         self.assertEqual(self.client.get("/rooms").status_code, 403)
+
+    def test_role_login_pages_enforce_account_role(self):
+        chooser = self.client.get("/login")
+        self.assertEqual(chooser.status_code, 200)
+        for role in ("student", "technician", "manager"):
+            with self.subTest(role=role):
+                response = self.client.get(f"/login/{role}")
+                self.assertEqual(response.status_code, 200)
+                self.assertIn('name="email"'.encode(), response.data)
+        mismatch = self.client.post("/login/student", data={
+            "email": "manager@example.test", "password": "password123",
+        })
+        self.assertEqual(mismatch.status_code, 401)
+        self.assertEqual(self.client.get("/dashboard").status_code, 302)
+        self.assertEqual(self.client.post("/login/manager", data={
+            "email": "manager@example.test", "password": "password123",
+        }).status_code, 302)
+
+    def test_student_rates_assigned_technician_after_issue_is_closed(self):
+        open_issue = self.make_issue(technician_id=self.technician.id)
+        closed_issue = self.make_issue(technician_id=self.technician.id, status="closed")
+        self.login("student@example.test")
+
+        self.assertEqual(self.client.post(f"/issues/{open_issue.id}/rating", data={"stars": "5"}).status_code, 302)
+        self.assertIsNone(db.session.get(IssueRating, open_issue.id))
+        detail = self.client.get(f"/issues/{closed_issue.id}")
+        self.assertEqual(detail.status_code, 200)
+        self.assertIn(b'name="stars"', detail.data)
+        self.assertEqual(self.client.post(f"/issues/{closed_issue.id}/rating", data={"stars": "6"}).status_code, 302)
+        self.assertIsNone(db.session.get(IssueRating, closed_issue.id))
+        self.assertEqual(self.client.post(f"/issues/{closed_issue.id}/rating", data={
+            "stars": "4", "comment": "x" * 1001,
+        }).status_code, 302)
+        self.assertIsNone(db.session.get(IssueRating, closed_issue.id))
+        self.assertEqual(self.client.post(f"/issues/{closed_issue.id}/rating", data={
+            "stars": "5", "comment": "Great work",
+        }).status_code, 302)
+        rating = db.session.get(IssueRating, closed_issue.id)
+        self.assertEqual(rating.stars, 5)
+        self.assertEqual(rating.technician_id, self.technician.id)
+        self.assertEqual(rating.comment, "Great work")
+        self.assertEqual(self.client.post(f"/issues/{closed_issue.id}/rating", data={"stars": "4"}).status_code, 302)
+        db.session.refresh(rating)
+        self.assertEqual(rating.stars, 5)
+
+        self.client.post("/logout")
+        self.login("other@example.test")
+        self.assertEqual(self.client.post(f"/issues/{closed_issue.id}/rating", data={"stars": "3"}).status_code, 403)
+        self.client.post("/logout")
+        self.login("manager@example.test")
+        report = self.client.get("/reports")
+        self.assertEqual(report.status_code, 200)
+        self.assertIn(b"5.0/5", report.data)
+        self.assertIn("1 değerlendirme".encode(), report.data)
 
     def test_room_management_capacity_and_assignment_end(self):
         self.login("manager@example.test")

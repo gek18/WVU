@@ -50,6 +50,9 @@ button, input, select, textarea { font: inherit; }
   background: var(--forest-deep);
 }
 .navbar-brand { display: inline-flex; align-items: center; gap: 10px; font-size: 1.08rem; letter-spacing: -.025em; }
+.university-brand { gap: 12px; color: #fff; line-height: 1.15; }
+.university-logo { width: 43px; height: 43px; flex: 0 0 43px; padding: 3px; border: 1px solid #e2e9e5; border-radius: 50%; background: white; object-fit: contain; }
+.university-brand small { display: block; margin-block-start: 4px; color: #bacbc3; font-size: .64rem; font-weight: 500; letter-spacing: .01em; }
 .brand-mark {
   display: inline-grid;
   width: 34px;
@@ -217,6 +220,15 @@ button, input, select, textarea { font: inherit; }
 .form-check-input:checked { border-color: var(--green); background-color: var(--green); }
 .form-hint { margin-block-start: -4px; color: #718078; font-size: .75rem; }
 .auth-switch { margin-block-start: 20px; color: var(--muted); text-align: center; font-size: .84rem; }
+.role-login-list { display: grid; gap: 10px; }
+.role-login-link { display: flex; align-items: center; gap: 13px; min-height: 76px; padding: 12px; border: 1px solid var(--line); border-radius: 5px; color: var(--ink); transition: border-color .15s ease, background-color .15s ease; }
+.role-login-link:hover { border-color: #86a99a; background: #f5f8f6; color: var(--forest); }
+.role-login-icon { display: grid; width: 38px; height: 38px; flex: 0 0 38px; place-items: center; border: 1px solid #cbdad2; border-radius: 50%; background: #edf3ef; color: var(--forest); font-size: .8rem; font-weight: 700; }
+.role-login-link strong, .role-login-link small { display: block; }
+.role-login-link strong { font-size: .92rem; }
+.role-login-link small { margin-block-start: 2px; color: var(--muted); font-size: .75rem; }
+.role-login-arrow { margin-inline-start: auto; color: var(--green); font-size: 1.2rem; }
+.role-login-layout .auth-card { align-self: stretch; }
 .auth-switch a { font-weight: 700; }
 .form-panel { max-width: 740px; padding: clamp(20px, 4vw, 34px); }
 .form-panel .form-grid { gap: 11px; }
@@ -240,6 +252,16 @@ button, input, select, textarea { font: inherit; }
 .timeline strong { color: var(--forest); font-size: .83rem; }
 .timeline p { margin: 1px 0; color: #65736d; font-size: .78rem; }
 .timeline small { color: #7b8982; font-size: .7rem; }
+.rating-panel { border-inline-start: 3px solid var(--brass); }
+.rating-fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+.rating-fieldset legend { float: none; width: auto; margin-block-end: 5px; }
+.rating-options { display: flex; flex-wrap: wrap; gap: 8px; direction: ltr; }
+.rating-option input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.rating-option label { display: inline-flex; min-width: 48px; min-height: 42px; align-items: center; justify-content: center; gap: 4px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 4px; color: #a36b1e; cursor: pointer; font-weight: 700; }
+.rating-option input:checked + label { border-color: var(--brass); background: #fff8e9; box-shadow: inset 0 0 0 1px var(--brass); }
+.rating-option input:focus-visible + label { outline: 3px solid var(--brass); outline-offset: 2px; }
+.rating-summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
+.rating-stars { color: #a36b1e; letter-spacing: .08em; }
 .assign-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; align-items: center; gap: 9px; }
 .back-link { color: #5f7268; font-size: .82rem; }
 .count-chip { display: inline-block; padding: 4px 9px; border: 1px solid #d7e3dc; background: #f2f7f3; color: var(--green-dark); font-size: .72rem; font-weight: 700; white-space: nowrap; }
@@ -314,6 +336,7 @@ button, input, select, textarea { font: inherit; }
   .auth-aside h1 { font-size: 2.55rem; }
   .aside-line { margin-block-start: 12px; }
   .auth-card { padding: 26px; }
+  .role-login-layout .auth-card { align-self: auto; }
   .detail-meta { grid-template-columns: 1fr; gap: 9px; }
   .assign-row { grid-template-columns: 1fr; }
   .filter-row { align-items: stretch; flex-wrap: wrap; }

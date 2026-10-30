@@ -4,11 +4,12 @@ from uuid import uuid4
 
 from flask import Blueprint, abort, current_app, flash as flask_flash, redirect, render_template, request, send_from_directory, url_for
 from flask_login import current_user, login_required
+from sqlalchemy.exc import IntegrityError
 from werkzeug.utils import secure_filename
 
 from .extensions import db
 from .i18n import translate
-from .models import Issue, IssueStatusHistory, MaintenanceSkill, RoomAssignment, User, utcnow
+from .models import Issue, IssueRating, IssueStatusHistory, MaintenanceSkill, RoomAssignment, User, utcnow
 
 issues_bp = Blueprint("issues", __name__)
 ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "webp"}
@@ -213,5 +214,41 @@ def update_status(issue_id):
     db.session.add(IssueStatusHistory(issue_id=issue.id, changed_by_id=current_user.id, from_status=previous, to_status=new_status, note=request.form.get("note", "").strip()[:255] or None))
     db.session.commit()
     flash("Talep durumu güncellendi.", "success")
+    return redirect(url_for("issues.issue_detail", issue_id=issue.id))
+
+
+@issues_bp.post("/issues/<int:issue_id>/rating")
+@has_role("student")
+def rate_technician(issue_id):
+    issue = db.get_or_404(Issue, issue_id)
+    if issue.student_id != current_user.id:
+        abort(403)
+    if issue.status != "closed" or issue.technician_id is None:
+        flash("Değerlendirme yalnızca teknisyen tarafından kapatılan talepler için yapılabilir.", "warning")
+        return redirect(url_for("issues.issue_detail", issue_id=issue.id))
+    if db.session.get(IssueRating, issue.id):
+        flash("Bu talep için daha önce değerlendirme gönderdiniz.", "info")
+        return redirect(url_for("issues.issue_detail", issue_id=issue.id))
+    try:
+        stars = int(request.form.get("stars", ""))
+    except ValueError:
+        stars = 0
+    comment = request.form.get("comment", "").strip()
+    if stars not in range(1, 6) or len(comment) > 1000:
+        flash("1 ile 5 yıldız arasında bir puan seçin; yorum en fazla 1000 karakter olabilir.", "danger")
+        return redirect(url_for("issues.issue_detail", issue_id=issue.id))
+    db.session.add(IssueRating(
+        issue_id=issue.id,
+        technician_id=issue.technician_id,
+        stars=stars,
+        comment=comment or None,
+    ))
+    try:
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        flash("Bu talep için daha önce değerlendirme gönderdiniz.", "info")
+        return redirect(url_for("issues.issue_detail", issue_id=issue.id))
+    flash("Değerlendirmeniz kaydedildi. Teşekkür ederiz.", "success")
     return redirect(url_for("issues.issue_detail", issue_id=issue.id))
 

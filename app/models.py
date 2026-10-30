@@ -30,6 +30,7 @@ class User(UserMixin, db.Model):
     role = db.Column(db.String(20), nullable=False, default="student", index=True)
     created_at = db.Column(db.DateTime, nullable=False, default=utcnow)
     skills = db.relationship("MaintenanceSkill", secondary=technician_skills, back_populates="technicians")
+    ratings_received = db.relationship("IssueRating", back_populates="technician", foreign_keys="IssueRating.technician_id")
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -125,10 +126,27 @@ class Issue(db.Model):
     technician = db.relationship("User", foreign_keys=[technician_id])
     room = db.relationship("Room", back_populates="issues")
     history = db.relationship("IssueStatusHistory", back_populates="issue", cascade="all, delete-orphan", order_by="IssueStatusHistory.created_at")
+    rating = db.relationship("IssueRating", back_populates="issue", uselist=False, cascade="all, delete-orphan")
 
     @property
     def display_status(self):
         return translate({"open": "Açık", "assigned": "Atandı", "in_progress": "Onarımda", "closed": "Kapalı"}.get(self.status, self.status))
+
+
+class IssueRating(db.Model):
+    __tablename__ = "issue_ratings"
+    __table_args__ = (
+        CheckConstraint("stars >= 1 AND stars <= 5", name="ck_issue_ratings_stars_range"),
+        CheckConstraint("comment IS NULL OR length(comment) <= 1000", name="ck_issue_ratings_comment_length"),
+    )
+
+    issue_id = db.Column(db.Integer, db.ForeignKey("issues.id", ondelete="CASCADE"), primary_key=True)
+    technician_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="RESTRICT"), nullable=False, index=True)
+    stars = db.Column(db.Integer, nullable=False)
+    comment = db.Column(db.String(1000))
+    created_at = db.Column(db.DateTime, nullable=False, default=utcnow)
+    issue = db.relationship("Issue", back_populates="rating")
+    technician = db.relationship("User", back_populates="ratings_received", foreign_keys=[technician_id])
 
 
 class IssueStatusHistory(db.Model):

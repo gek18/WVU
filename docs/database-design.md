@@ -12,6 +12,8 @@ erDiagram
     USERS o|--o{ ISSUES : handles
     ISSUES ||--o{ ISSUE_STATUS_HISTORY : records
     USERS o|--o{ ISSUE_STATUS_HISTORY : changes
+    ISSUES ||--o| ISSUE_RATINGS : receives
+    USERS ||--o{ ISSUE_RATINGS : is_rated
     USERS ||--o{ TECHNICIAN_SKILLS : has
     MAINTENANCE_SKILLS ||--o{ TECHNICIAN_SKILLS : maps
 
@@ -65,6 +67,13 @@ erDiagram
         string to_status
         datetime created_at
     }
+    ISSUE_RATINGS {
+        int issue_id PK,FK
+        int technician_id FK
+        int stars
+        string comment
+        datetime created_at
+    }
 ```
 
 `users` tablosu üç rolü de saklar. `room_assignments` önceki oda atamalarını korur; kısmi benzersiz indeks her öğrenci için en fazla bir etkin atama olmasını sağlar. Atama sırasında odanın kapasitesi kontrol edilir. `technician_skills`, teknisyenler ile bakım uzmanlıkları arasındaki N:N ilişkisini çözer. `issue_status_history`, her durum değişikliğini ayrı kaydeder.
@@ -82,4 +91,6 @@ erDiagram
 - **2NF:** Anahtar olmayan alanlar anahtarın tamamına bağlıdır. `technician_skills` birleşik anahtarı `(technician_id, skill_id)` kullanır ve anahtar dışı alan içermez. Diğer tablolarda tek sütunlu birincil anahtar vardır.
 - **3NF:** Oda bilgileri yalnızca `rooms` tablosunda; kullanıcı ve rol bilgileri `users` tablosunda; uzmanlık adı `maintenance_skills` tablosunda tutulur. Arıza geçmişi `issues` tablosunda yinelenmez. Anahtar olmayan alanlar anahtara, anahtarın tamamına ve yalnızca anahtara bağlıdır.
 
-Şemada yedi ilişkili tablo, PK/FK'ler, benzersizlik ve kontrol kısıtları ile e-posta, yabancı anahtarlar ve arıza durumu/tarihi için indeksler kullanılır. ORM sorguları SQLAlchemy parametreli ifade API'si üzerinden çalışır.
+`issue_ratings`, kapatılmış bir talep için öğrenci puanını ve değerlendirilen teknisyeni tek satırda tutar; `issue_id` birincil anahtarı her talebe en fazla bir değerlendirme bağlar. Böylece teknisyen sonradan değişse bile değerlendirme hangi teknisyene ait olduğunu korur. Puan 1–5 aralığındadır; yorum isteğe bağlıdır ve 1000 karakterle sınırlıdır.
+
+Şemada sekiz ilişkili tablo, PK/FK'ler, benzersizlik ve kontrol kısıtları ile e-posta, yabancı anahtarlar ve arıza durumu/tarihi için indeksler kullanılır. ORM sorguları SQLAlchemy parametreli ifade API'si üzerinden çalışır.

@@ -7,7 +7,7 @@ from sqlalchemy import case, func
 
 from .extensions import db
 from .i18n import translate
-from .models import Issue, MaintenanceSkill, Room, RoomAssignment, User
+from .models import Issue, IssueRating, MaintenanceSkill, Room, RoomAssignment, User
 
 main_bp = Blueprint("main", __name__)
 
@@ -197,13 +197,20 @@ def create_team_member():
 @main_bp.get("/reports")
 @roles_required("manager")
 def reports():
+    ratings = db.select(
+        IssueRating.technician_id.label("technician_id"),
+        func.avg(IssueRating.stars).label("avg_rating"),
+        func.count(IssueRating.issue_id).label("rating_count"),
+    ).group_by(IssueRating.technician_id).subquery()
     rows = db.session.execute(
         db.select(User.name, func.count(Issue.id).label("total"),
                   func.sum(case((Issue.status == "closed", 1), else_=0)).label("closed"),
-                  func.avg(Issue.resolution_minutes).label("avg_minutes"))
+                  func.avg(Issue.resolution_minutes).label("avg_minutes"),
+                  ratings.c.avg_rating, ratings.c.rating_count)
         .outerjoin(Issue, Issue.technician_id == User.id)
+        .outerjoin(ratings, ratings.c.technician_id == User.id)
         .where(User.role == "technician")
-        .group_by(User.id, User.name)
+        .group_by(User.id, User.name, ratings.c.avg_rating, ratings.c.rating_count)
         .order_by(func.count(Issue.id).desc(), User.name)
     ).all()
     return render_template("reports.html", rows=rows)
