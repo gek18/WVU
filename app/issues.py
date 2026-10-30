@@ -2,15 +2,20 @@ from functools import wraps
 from pathlib import Path
 from uuid import uuid4
 
-from flask import Blueprint, abort, current_app, flash, redirect, render_template, request, send_from_directory, url_for
+from flask import Blueprint, abort, current_app, flash as flask_flash, redirect, render_template, request, send_from_directory, url_for
 from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
 
 from .extensions import db
+from .i18n import translate
 from .models import Issue, IssueStatusHistory, MaintenanceSkill, RoomAssignment, User, utcnow
 
 issues_bp = Blueprint("issues", __name__)
 ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "webp"}
+
+
+def flash(message, category=None):
+    flask_flash(translate(message), category)
 
 
 def has_role(*roles):
@@ -177,7 +182,7 @@ def assign_issue(issue_id):
     issue.status = "assigned"
     issue.closed_at = None
     issue.resolution_minutes = None
-    db.session.add(IssueStatusHistory(issue_id=issue.id, changed_by_id=current_user.id, from_status=old_status, to_status="assigned", note=f"Şu teknisyene atandı: {technician.name}"))
+    db.session.add(IssueStatusHistory(issue_id=issue.id, changed_by_id=current_user.id, from_status=old_status, to_status="assigned", note=translate("Şu teknisyene atandı: {name}", name=technician.name)))
     db.session.commit()
     flash("Talep teknisyene atandı.", "success")
     return redirect(url_for("issues.issue_detail", issue_id=issue.id))

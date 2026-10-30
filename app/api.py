@@ -3,6 +3,7 @@ from flask_login import current_user, login_required
 from sqlalchemy import case, func
 
 from .extensions import db
+from .i18n import translate
 from .main import roles_required
 from .models import Issue, IssueStatusHistory, RoomAssignment, User, utcnow
 
@@ -38,7 +39,7 @@ def get_issues():
 def get_issue(issue_id):
     issue = db.get_or_404(Issue, issue_id)
     if (current_user.role == "student" and issue.student_id != current_user.id) or (current_user.role == "technician" and issue.technician_id != current_user.id):
-        return jsonify(error="Erişim reddedildi."), 403
+        return jsonify(error=translate("Erişim reddedildi.")), 403
     return jsonify(issue_json(issue))
 
 
@@ -49,10 +50,10 @@ def post_issue():
     title = str(data.get("title", "")).strip()
     description = str(data.get("description", "")).strip()
     if not 4 <= len(title) <= 120 or not 10 <= len(description) <= 3000:
-        return jsonify(error="Başlık veya açıklama geçersiz."), 400
+        return jsonify(error=translate("Başlık veya açıklama geçersiz.")), 400
     assignment = db.session.scalar(db.select(RoomAssignment).where(RoomAssignment.student_id == current_user.id, RoomAssignment.end_date.is_(None)))
     if assignment is None:
-        return jsonify(error="Etkin bir oda atamanız yok."), 409
+        return jsonify(error=translate("Etkin bir oda atamanız yok.")), 409
     issue = Issue(student_id=current_user.id, room_id=assignment.room_id, title=title, description=description)
     db.session.add(issue)
     db.session.flush()
@@ -70,9 +71,9 @@ def patch_issue_status(issue_id):
     allowed = current_user.role == "technician" and issue.technician_id == current_user.id and new_status in {"in_progress", "closed"}
     transitions = {"open": {"assigned"}, "assigned": {"open", "in_progress"}, "in_progress": {"assigned", "closed"}, "closed": {"assigned"}}
     if not allowed:
-        return jsonify(error="Erişim reddedildi."), 403
+        return jsonify(error=translate("Erişim reddedildi.")), 403
     if new_status not in transitions.get(issue.status, set()):
-        return jsonify(error="İstenen durum geçişine izin verilmiyor."), 409
+        return jsonify(error=translate("İstenen durum geçişine izin verilmiyor.")), 409
     previous = issue.status
     issue.status = new_status
     if new_status == "closed":
@@ -104,9 +105,9 @@ def api_technician_report():
 
 @api_bp.errorhandler(403)
 def api_forbidden(error):
-    return jsonify(error="Erişim reddedildi."), 403
+    return jsonify(error=translate("Erişim reddedildi.")), 403
 
 
 @api_bp.errorhandler(404)
 def api_not_found(error):
-    return jsonify(error="Kayıt bulunamadı."), 404
+    return jsonify(error=translate("Kayıt bulunamadı.")), 404

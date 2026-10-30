@@ -86,6 +86,23 @@ class ApplicationWorkflowTests(unittest.TestCase):
         css.close()
         self.assertEqual(self.client.get("/missing-page").status_code, 404)
 
+    def test_language_switch_persists_and_sets_rtl_for_arabic(self):
+        response = self.client.get("/language/en", headers={"Referer": "http://localhost/"})
+        self.assertEqual(response.status_code, 302)
+        english = self.client.get("/")
+        self.assertIn(b'<html lang="en" dir="ltr">', english.data)
+        self.assertIn(b"Your dorm request", english.data)
+        self.assertIn(b"Room plan", english.data)
+
+        response = self.client.get("/language/ar", headers={"Referer": "http://localhost/"})
+        self.assertEqual(response.status_code, 302)
+        arabic = self.client.get("/")
+        self.assertIn(b'<html lang="ar" dir="rtl">', arabic.data)
+        self.assertIn("السكن".encode(), arabic.data)
+        self.assertIn(b"bootstrap.rtl.min.css", arabic.data)
+
+        self.assertEqual(self.client.get("/language/fr").status_code, 404)
+
     def test_manager_and_technician_dashboards_render(self):
         self.login("manager@example.test")
         self.assertEqual(self.client.get("/dashboard").status_code, 200)

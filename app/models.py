@@ -5,6 +5,7 @@ from sqlalchemy import CheckConstraint, Index, UniqueConstraint, text
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from .extensions import db, login_manager
+from .i18n import translate
 
 
 def utcnow():
@@ -38,7 +39,7 @@ class User(UserMixin, db.Model):
 
     @property
     def display_role(self):
-        return {"student": "Öğrenci", "technician": "Teknisyen", "manager": "Yönetici"}.get(self.role, self.role)
+        return translate({"student": "Öğrenci", "technician": "Teknisyen", "manager": "Yönetici"}.get(self.role, self.role))
 
 
 @login_manager.user_loader
@@ -127,7 +128,7 @@ class Issue(db.Model):
 
     @property
     def display_status(self):
-        return {"open": "Açık", "assigned": "Atandı", "in_progress": "Onarımda", "closed": "Kapalı"}.get(self.status, self.status)
+        return translate({"open": "Açık", "assigned": "Atandı", "in_progress": "Onarımda", "closed": "Kapalı"}.get(self.status, self.status))
 
 
 class IssueStatusHistory(db.Model):

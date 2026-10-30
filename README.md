@@ -1,6 +1,6 @@
 # YurtTakip — Öğrenci Yurdu Oda ve Bakım Talebi Yönetimi
 
-Web Programlama ve Veritabanı Sistemleri dersi için hazırlanmış Türkçe (LTR) web uygulaması. Öğrenci, teknisyen ve yönetici rolleri; oda yönetimi; bakım talepleri; teknisyen ataması; durum geçmişi ve performans raporlarını içerir.
+Web Programlama ve Veritabanı Sistemleri dersi için hazırlanmış çok dilli bir web uygulaması. Öğrenci, teknisyen ve yönetici rolleri; oda yönetimi; bakım talepleri; teknisyen ataması; durum geçmişi ve performans raporlarını içerir. Arayüz Türkçe, İngilizce ve Arapça kullanılabilir; dil seçimi üst menüden yapılır ve Arapça görünüm RTL düzenine geçer.
 
 ## Gereksinimler
 
@@ -66,7 +66,7 @@ API aynı oturum ve rol denetimlerini kullanır. CSRF koruması açıktır. Tara
 | PATCH | `/api/issues/<id>/status` | Yalnızca o talebe atanmış teknisyen |
 | GET | `/api/reports/technicians` | Yönetici |
 
-POST örneği: `{"title":"Su sızıntısı","description":"Lavabonun altında bu sabahtan beri su sızıyor."}`. PATCH örneği: `{"status":"in_progress"}`. API JSON yanıtları Türkçedir; makine tarafından kullanılan alan adları ve durum kodları sabit kalır.
+POST örneği: `{"title":"Su sızıntısı","description":"Lavabonun altında bu sabahtan beri su sızıyor."}`. PATCH örneği: `{"status":"in_progress"}`. API JSON hata metinleri oturum diline göre çevrilir; makine tarafından kullanılan alan adları, durum kodları ve durum değerleri sabit kalır.
 
 ## PostgreSQL (öğretim elemanı isterse)
 

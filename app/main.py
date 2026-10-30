@@ -1,14 +1,19 @@
 from datetime import date
 from functools import wraps
 
-from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
+from flask import Blueprint, abort, flash as flask_flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 from sqlalchemy import case, func
 
 from .extensions import db
+from .i18n import translate
 from .models import Issue, MaintenanceSkill, Room, RoomAssignment, User
 
 main_bp = Blueprint("main", __name__)
+
+
+def flash(message, category=None):
+    flask_flash(translate(message), category)
 
 
 def roles_required(*roles):

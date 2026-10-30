@@ -1,13 +1,18 @@
 import re
 
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash as flask_flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 from sqlalchemy import func
 
 from .extensions import db
+from .i18n import translate
 from .models import User
 
 auth_bp = Blueprint("auth", __name__)
+
+
+def flash(message, category=None):
+    flask_flash(translate(message), category)
 
 
 @auth_bp.route("/register", methods=["GET", "POST"])

@@ -1,12 +1,33 @@
 {% extends 'base.html' %}
-{% block title %}YurtTakip | Talebiniz doğru ekibe ulaşsın{% endblock %}
+{% block title %}{{ t('YurtTakip | Talebiniz doğru ekibe ulaşsın') }}{% endblock %}
 {% block content %}
-<section class="hero row align-items-center g-5"><div class="col-lg-7">
-  <span class="eyebrow"><span class="eyebrow-dot"></span> Öğrenci yurdu · Akıllı bakım yönetimi</span>
-  <h1>Yurtla ilgili talebiniz<br><span class="text-accent">doğru ekibe ulaşsın.</span></h1>
-  <p class="hero-copy">Sorunu bildirin, teknisyen atamasını ve onarım sürecini kapanışa kadar kolayca takip edin.</p>
-  <div class="d-flex gap-3 flex-wrap mt-4"><a class="btn btn-primary btn-lg" href="{{ url_for('auth.register') }}">Öğrenci hesabı oluştur <span aria-hidden="true">←</span></a><a class="btn btn-light-outline btn-lg" href="{{ url_for('auth.login') }}">Giriş yap</a></div>
-  <div class="hero-meta"><span>01 · Bildir</span><span>02 · Ata</span><span>03 · Onar</span></div>
-</div><div class="col-lg-5"><div class="hero-art"><div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div><div class="art-building"><div class="building-roof"></div><div class="building-body"><div class="building-window"></div><div class="building-window"></div><div class="building-window"></div><div class="building-window"></div><div class="building-door"></div></div></div><div class="floating-card card-status"><span class="status-pulse"></span><div><small>Talep durumu</small><strong>Onarımda</strong></div></div><div class="floating-card card-ticket"><span class="ticket-icon">✓</span><div><small>Teknisyen atandı</small><strong>Talep #1028</strong></div></div><span class="art-spark spark-a">✳</span><span class="art-spark spark-b">✦</span></div></div></section>
-<section class="feature-row row g-3 pb-5"><div class="col-md-4"><article class="feature-card"><span class="feature-number">01</span><h2>Her odanın kaydı</h2><p>Oda atamaları ve arıza geçmişi tek yerde.</p></article></div><div class="col-md-4"><article class="feature-card"><span class="feature-number">02</span><h2>Şeffaf takip</h2><p>Açık talepten kapanışa kadar tüm durum güncellemeleri kayıtlı.</p></article></div><div class="col-md-4"><article class="feature-card"><span class="feature-number">03</span><h2>Doğru teknisyen</h2><p>Uzmanlığa göre atama, iş yükü ve çözüm süresi takibi.</p></article></div></section>
+<section class="hero row align-items-center g-5">
+  <div class="col-lg-7 hero-copy-column">
+    <p class="eyebrow"><span class="eyebrow-dot"></span>{{ t('Öğrenci yurdu · Akıllı bakım yönetimi') }}</p>
+    <h1>{{ t('Yurtla ilgili talebiniz') }} <span class="text-accent">{{ t('doğru ekibe ulaşsın.') }}</span></h1>
+    <p class="hero-copy">{{ t('Sorunu bildirin, teknisyen atamasını ve onarım sürecini kapanışa kadar kolayca takip edin.') }}</p>
+    <div class="hero-actions"><a class="btn btn-primary btn-lg" href="{{ url_for('auth.register') }}">{{ t('Öğrenci hesabı oluştur') }}</a><a class="btn btn-light-outline-dark btn-lg" href="{{ url_for('auth.login') }}">{{ t('Giriş yap') }}</a></div>
+    <ol class="process-steps"><li><span>01</span>{{ t('Bildir') }}</li><li><span>02</span>{{ t('Ata') }}</li><li><span>03</span>{{ t('Onar') }}</li></ol>
+  </div>
+  <div class="col-lg-5">
+    <div class="floor-plan-art" role="img" aria-label="{{ t('Oda planı') }}">
+      <div class="plan-heading"><span>{{ t('Oda planı') }}</span><span>{{ t('Bina A · 2. kat') }}</span></div>
+      <div class="plan-map">
+        <div class="plan-room room-201"><b>201</b><span>{{ t('Oda') }}</span></div>
+        <div class="plan-room room-202"><b>202</b><span>{{ t('Oda') }}</span></div>
+        <div class="plan-room room-203"><b>203</b><span>{{ t('Oda') }}</span></div>
+        <div class="plan-room room-204"><b>204</b><span>{{ t('Oda') }}</span></div>
+        <div class="plan-corridor"><span>{{ t('Koridor') }}</span></div>
+        <span class="plan-door door-one" aria-hidden="true"></span><span class="plan-door door-two" aria-hidden="true"></span>
+        <span class="plan-marker marker-one" aria-hidden="true"></span><span class="plan-marker marker-two" aria-hidden="true"></span>
+      </div>
+      <div class="plan-footer"><span><i class="occupancy-dot"></i>{{ t('Doluluk') }}</span><strong>{{ t('Bakım talebi') }} <em>#1028</em><small>{{ t('Açık') }}</small></strong></div>
+    </div>
+  </div>
+</section>
+<section class="feature-row row g-4">
+  <div class="col-md-4"><article class="feature-card"><span class="feature-rule" aria-hidden="true"></span><h2>{{ t('Her odanın kaydı') }}</h2><p>{{ t('Oda atamaları ve arıza geçmişi tek yerde.') }}</p></article></div>
+  <div class="col-md-4"><article class="feature-card"><span class="feature-rule" aria-hidden="true"></span><h2>{{ t('Şeffaf takip') }}</h2><p>{{ t('Açık talepten kapanışa kadar tüm durum güncellemeleri kayıtlı.') }}</p></article></div>
+  <div class="col-md-4"><article class="feature-card"><span class="feature-rule" aria-hidden="true"></span><h2>{{ t('Doğru teknisyen') }}</h2><p>{{ t('Uzmanlığa göre atama, iş yükü ve çözüm süresi takibi.') }}</p></article></div>
+</section>
 {% endblock %}

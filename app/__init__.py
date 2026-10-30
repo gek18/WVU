@@ -1,12 +1,13 @@
 import os
 from pathlib import Path
 
-from flask import Flask, jsonify, redirect, render_template, request, url_for
+from flask import Flask, flash as flask_flash, jsonify, redirect, render_template, request, url_for
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from flask_wtf.csrf import CSRFError
 
 from .extensions import csrf, db, login_manager, migrate
+from .i18n import get_language, language_bp, translate
 
 
 @event.listens_for(Engine, "connect")
@@ -37,13 +38,13 @@ def create_app(test_config=None):
     login_manager.init_app(app)
     csrf.init_app(app)
     login_manager.login_view = "auth.login"
-    login_manager.login_message = "Bu sayfaya erişmek için giriş yapın."
-    login_manager.login_message_category = "warning"
+    login_manager.login_message = None
 
     @login_manager.unauthorized_handler
     def unauthorized():
         if request.blueprint == "api":
-            return jsonify(error="Giriş yapmanız gerekiyor."), 401
+            return jsonify(error=translate("Giriş yapmanız gerekiyor.")), 401
+        flask_flash(translate("Bu sayfaya erişmek için giriş yapın."), "warning")
         return redirect(url_for("auth.login", next=request.url))
 
     from . import models  # noqa: F401
@@ -56,6 +57,16 @@ def create_app(test_config=None):
     app.register_blueprint(main_bp)
     app.register_blueprint(issues_bp)
     app.register_blueprint(api_bp)
+    app.register_blueprint(language_bp)
+
+    @app.context_processor
+    def inject_language():
+        language = get_language()
+        return {
+            "t": translate,
+            "current_language": language,
+            "current_direction": "rtl" if language == "ar" else "ltr",
+        }
 
     @app.errorhandler(404)
     def not_found(error):
@@ -67,7 +78,7 @@ def create_app(test_config=None):
 
     @app.errorhandler(CSRFError)
     def csrf_error(error):
-        message = "Güvenlik doğrulaması başarısız. Sayfayı yenileyip tekrar deneyin."
+        message = translate("Güvenlik doğrulaması başarısız. Sayfayı yenileyip tekrar deneyin.")
         if request.blueprint == "api":
             return jsonify(error=message), 400
         return render_template("errors/400.html"), 400
