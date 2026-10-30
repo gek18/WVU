@@ -1,0 +1,1 @@
+{% extends 'base.html' %}{% block title %}Görsel çok büyük | YurtTakip{% endblock %}{% block content %}<section class="error-panel"><span class="error-code">5 MB</span><h1>Görsel izin verilen boyutu aşıyor.</h1><p>Daha küçük bir görsel seçip tekrar deneyin.</p><a class="btn btn-primary" href="{{ url_for('issues.create_issue') }}">Talebe dön</a></section>{% endblock %}
