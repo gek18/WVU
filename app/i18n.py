@@ -198,6 +198,11 @@ _CATALOG = {
 }
 
 _CATALOG["en"].update({
+    "Ana gezinme": "Main navigation", "Menüyü kapat": "Close menu", "Çalışma alanı": "Workspace",
+    "Yönetim": "Management", "Temayı değiştir": "Change theme", "Görünüm": "Appearance",
+    "Talep adımları": "Request steps", "Sorunu ve fotoğrafı paylaşın.": "Share the issue and a photo.",
+    "Yönetici doğru teknisyeni görevlendirir.": "A manager assigns the right technician.",
+    "Teknisyen onarımı tamamlar, öğrenci değerlendirme bırakır.": "The technician completes the repair; the student leaves feedback.",
     "Dil": "Language", "Öğrenci": "Student", "5 MB": "5 MB", "YurtTakip |": "YurtTakip |",
     "YurtTakip ·": "YurtTakip ·", "YurtTakip": "YurtTakip",
     "Giriş yapmanız gerekiyor.": "Please sign in.", "Bu sayfaya erişmek için giriş yapın.": "Sign in to access this page.",
@@ -260,6 +265,11 @@ _CATALOG["en"].update({
     "Ortalama öğrenci puanı": "Average student rating", "değerlendirme": "ratings", "Henüz değerlendirme yok": "No ratings yet",
 })
 _CATALOG["ar"].update({
+    "Ana gezinme": "القائمة الرئيسية", "Menüyü kapat": "إغلاق القائمة", "Çalışma alanı": "مساحة العمل",
+    "Yönetim": "الإدارة", "Temayı değiştir": "تغيير السمة", "Görünüm": "المظهر",
+    "Talep adımları": "خطوات الطلب", "Sorunu ve fotoğrafı paylaşın.": "أرسل المشكلة وصورة لها.",
+    "Yönetici doğru teknisyeni görevlendirir.": "يعيّن المدير الفني المناسب.",
+    "Teknisyen onarımı tamamlar, öğrenci değerlendirme bırakır.": "يُكمل الفني الإصلاح، ثم يقيّمه الطالب.",
     "Dil": "اللغة", "Öğrenci": "طالب", "5 MB": "٥ ميغابايت", "YurtTakip |": "YurtTakip |",
     "YurtTakip ·": "YurtTakip ·", "YurtTakip": "YurtTakip",
     "Giriş yapmanız gerekiyor.": "يرجى تسجيل الدخول.", "Bu sayfaya erişmek için giriş yapın.": "سجل الدخول للوصول إلى هذه الصفحة.",

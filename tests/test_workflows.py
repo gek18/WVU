@@ -167,6 +167,49 @@ class ApplicationWorkflowTests(unittest.TestCase):
             "email": "manager@example.test", "password": "password123",
         }).status_code, 302)
 
+    def test_pages_render_interactive_shell_with_keyboard_accessible_controls(self):
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'src="/static/images/siirt-university-horizontal.png"', response.data)
+        self.assertLess(response.data.index(b'class="university-logo"'), response.data.index(b'<strong>YurtTakip</strong>'))
+        logo = self.client.get("/static/images/siirt-university-horizontal.png")
+        self.assertEqual(logo.status_code, 200)
+        self.assertEqual(logo.mimetype, "image/png")
+        logo.close()
+        self.assertIn(b"data-app-shell", response.data)
+        self.assertIn(b'id="site-navigation"', response.data)
+        self.assertIn(b'aria-controls="site-navigation"', response.data)
+        self.assertIn(b'data-theme-toggle', response.data)
+        self.assertIn(b'aria-pressed="false"', response.data)
+        self.assertIn(b"/static/app.js", response.data)
+        self.assertIn(b'data-flow-demo', response.data)
+        self.assertIn(b'role="tablist"', response.data)
+        self.assertIn(b'aria-live="polite"', response.data)
+
+        script = self.client.get("/static/app.js")
+        self.assertEqual(script.status_code, 200)
+        self.assertIn(b"localStorage", script.data)
+        self.assertIn(b"Escape", script.data)
+        self.assertIn(b"ArrowRight", script.data)
+        self.assertIn(b"textContent", script.data)
+        script.close()
+
+        self.make_issue()
+        self.login("student@example.test")
+        issue_list = self.client.get("/issues")
+        self.assertIn('data-label="Talep"'.encode(), issue_list.data)
+        self.assertIn('data-label="Durum"'.encode(), issue_list.data)
+
+    def test_visual_system_has_soft_and_dark_themes_and_reduced_motion(self):
+        response = self.client.get("/static/style.css")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"[data-theme=\"soft\"]", response.data)
+        self.assertIn(b"[data-theme=\"night\"]", response.data)
+        self.assertIn(b"prefers-reduced-motion", response.data)
+        self.assertIn(b"--forest-panel", response.data)
+        self.assertIn(b'[data-theme="night"] .page-shell :is', response.data)
+        response.close()
+
     def test_student_rates_assigned_technician_after_issue_is_closed(self):
         open_issue = self.make_issue(technician_id=self.technician.id)
         closed_issue = self.make_issue(technician_id=self.technician.id, status="closed")

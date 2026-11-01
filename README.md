@@ -47,7 +47,7 @@ Durum akışı: `open` → `assigned` → `in_progress` → `closed`. Her geçi�
 
 ## Veritabanı ve geçişler
 
-Tablolar: `users`, `rooms`, `room_assignments`, `maintenance_skills`, `technician_skills`, `issues`, `issue_status_history`. ER diyagramı ve 3NF gerekçesi [`docs/database-design.md`](docs/database-design.md) dosyasındadır.
+Şema sekiz ilişkili tablo içerir: `users`, `rooms`, `room_assignments`, `maintenance_skills`, `technician_skills`, `issues`, `issue_status_history` ve `issue_ratings`. ER diyagramı ve 3NF gerekçesi [`docs/database-design.md`](docs/database-design.md) dosyasında; rubrik bazlı mevcut ilerleme değerlendirmesi [`docs/rubric-progress.md`](docs/rubric-progress.md) dosyasındadır.
 
 Şema modelinde değişiklik yaptıktan sonra:
 

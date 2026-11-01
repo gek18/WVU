@@ -7,7 +7,14 @@
     <h1>{{ t('Yurtla ilgili talebiniz') }} <span class="text-accent">{{ t('doğru ekibe ulaşsın.') }}</span></h1>
     <p class="hero-copy">{{ t('Sorunu bildirin, teknisyen atamasını ve onarım sürecini kapanışa kadar kolayca takip edin.') }}</p>
     <div class="hero-actions"><a class="btn btn-primary btn-lg" href="{{ url_for('auth.register') }}">{{ t('Öğrenci hesabı oluştur') }}</a><a class="btn btn-light-outline-dark btn-lg" href="{{ url_for('auth.login') }}">{{ t('Giriş yap') }}</a></div>
-    <ol class="process-steps"><li><span>01</span>{{ t('Bildir') }}</li><li><span>02</span>{{ t('Ata') }}</li><li><span>03</span>{{ t('Onar') }}</li></ol>
+    <div class="flow-demo" data-flow-demo>
+      <div class="flow-tabs" role="tablist" aria-label="{{ t('Talep adımları') }}">
+        <button class="flow-tab active" type="button" role="tab" id="flow-tab-report" aria-selected="true" aria-controls="flow-panel" tabindex="0" data-flow-step data-copy="{{ t('Sorunu ve fotoğrafı paylaşın.') }}"><span>01</span>{{ t('Bildir') }}</button>
+        <button class="flow-tab" type="button" role="tab" id="flow-tab-assign" aria-selected="false" aria-controls="flow-panel" tabindex="-1" data-flow-step data-copy="{{ t('Yönetici doğru teknisyeni görevlendirir.') }}"><span>02</span>{{ t('Ata') }}</button>
+        <button class="flow-tab" type="button" role="tab" id="flow-tab-repair" aria-selected="false" aria-controls="flow-panel" tabindex="-1" data-flow-step data-copy="{{ t('Teknisyen onarımı tamamlar, öğrenci değerlendirme bırakır.') }}"><span>03</span>{{ t('Onar') }}</button>
+      </div>
+      <p class="flow-copy" id="flow-panel" role="tabpanel" aria-labelledby="flow-tab-report" aria-live="polite" tabindex="0">{{ t('Sorunu ve fotoğrafı paylaşın.') }}</p>
+    </div>
   </div>
   <div class="col-lg-5">
     <div class="floor-plan-art" role="img" aria-label="{{ t('Oda planı') }}">
